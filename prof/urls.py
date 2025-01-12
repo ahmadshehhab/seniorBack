@@ -8,6 +8,9 @@ router = SimpleRouter()
 router.register('users', views.UserTypeViewSet, basename="user-types")
 router.register('register', views.RegisterViewSet, basename="register")
 router.register(r'jobposts', views.JobPostViewSet, basename='jobpost')
+router.register('posts-category', views.PostsCategoryViewSet, basename='postscategory')
+router.register('users-category', views.UsersCategoryViewSet, basename='userscategory')
+router.register('city-category', views.CityCategoryViewSet, basename='cityCategory')
 """ router.register('accept-job', views.jobAcceptanceView, basename='acceptJob') """
 
 # Note: LoginView is not a ViewSet; it should not be registered with a router.
@@ -24,4 +27,5 @@ urlpatterns = [
     path('api/login/', views.LoginView.as_view(), name='login'),
     path('send-invitation/', views.SendInvitationView.as_view(), name='send_invitation'),
     path('handle-invitation/', views.HandleInvitationView.as_view(), name='handle_invitation'),
+    path('send-email/', views.SendEmailView.as_view(), name='send_email'),
 ]

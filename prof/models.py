@@ -1,6 +1,7 @@
 import uuid
 from django.db import models
 from django.contrib.auth.models import User
+from datetime import datetime
 class UserProfile(models.Model):
     USER_TYPE_CHOICES = [
         ('homeowner', 'Homeowner'),
@@ -28,16 +29,48 @@ class UserProfile(models.Model):
         """Create a default user profile."""
         UserProfile.objects.get_or_create(user=user, phone="0", user_type='homeowner')
 
+class UsersCategory(models.Model):
+    type = models.CharField(max_length=255 , null=False , blank=False)
+    def __str__(self):
+        return self.type
+class CityCategory(models.Model):
+    city = models.CharField(max_length=255 , null=False , blank=False)
+    def __str__(self):
+        return self.city
+class PostsCategory(models.Model):
+    category = models.CharField(max_length=255 , null=False , blank=False)
+    def __str__(self):
+        return self.category
 
-        
 class Posts(models.Model):
+    status_choices = [
+        (True, 'Active'),
+        (False, 'Inactive'),
+    ]
     title = models.CharField(max_length=255)
     description = models.TextField()
     image = models.ImageField(upload_to='job_images/', blank=True, null=True)
     homeowner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='job_posts')
     created_at = models.DateTimeField(auto_now_add=True)
+    post_date = models.DateField(null=True, blank=True)
+    post_time = models.TimeField(null=True, blank=True)
     is_accepted = models.IntegerField(null=True, blank=True)
+    category = models.ForeignKey(PostsCategory, on_delete=models.CASCADE, related_name='post_category',null=False , blank=False,  default=1)
+    price = models.CharField(null=False , blank=False , default="الاتفاق عبر الهاتف" , max_length=255)
+    status = models.BooleanField(
+        choices=status_choices,
+        default=False,
+        null=False,
+        blank=False
+    )
+    scheduled_datetime = models.DateTimeField(
+        null=True, blank=True)  # Combines post_date + post_time
 
+    def save(self, *args, **kwargs):
+
+        if self.post_date and self.post_time:
+            self.scheduled_datetime = datetime.combine(self.post_date, self.post_time)
+        super().save(*args, **kwargs)
     def __str__(self):
         return self.title
 

@@ -9,7 +9,6 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
     'BLACKLIST_AFTER_ROTATION': True, 
     "ACCESS_TOKEN_LIFETIME": timedelta(days=10),
-      # This enables blacklisting of tokens
 }
 ALLOWED_HOSTS = []
 INSTALLED_APPS = [
@@ -19,11 +18,20 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_filters',
     'prof',
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders'
 ] 
+
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+        # ...
+    ),
+}
+
 APPEND_SLASH=False
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
