@@ -1,16 +1,32 @@
-"""
-ASGI config for project project.
+#  import os
+#  from django.core.asgi import get_asgi_application
+#  from channels.routing import ProtocolTypeRouter, URLRouter
+#  from channels.auth import AuthMiddlewareStack
+#  import prof.routing  # Replace `your_app` with the name of your app containing `routing.py`
+#
+#  os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'project.settings')
+#
+#  # Django's ASGI application for HTTP
+#  django_asgi_app = get_asgi_application()
+#
+#  # ProtocolTypeRouter to handle HTTP and WebSocket connections
+#  application = ProtocolTypeRouter({
+#      "http": django_asgi_app,  # Handles HTTP requests
+#      "websocket": AuthMiddlewareStack(
+#          URLRouter(
+#              prof.routing.websocket_urlpatterns  # WebSocket routing
+#          )
+#      ),
+#  })
 
-It exposes the ASGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/5.1/howto/deployment/asgi/
-"""
 
 import os
-
 from django.core.asgi import get_asgi_application
+from channels.routing import ProtocolTypeRouter
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'project.settings')
 
-application = get_asgi_application()
+application = ProtocolTypeRouter({
+    "http": get_asgi_application(),
+    # No WebSocket configuration needed for long polling
+})

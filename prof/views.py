@@ -3,8 +3,13 @@ from rest_framework.views import APIView
 from rest_framework import status , viewsets , permissions
 from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet ,ModelViewSet
+<<<<<<< HEAD
 from .serializer import RegisterSerializer, UserTypeSerializer ,JobPostSerializer , LoginSerializer , CompanyUserSerializer , HandleInvitationSerializer , UsersCategorySerializer , CityCategorySerializer, PostsCategorySerializer
 from .models import User , Posts  , UserProfile , WorkerInvitation , UsersCategory , CityCategory , PostsCategory
+=======
+from .serializer import RegisterSerializer, UserTypeSerializer ,JobPostSerializer , LoginSerializer , CompanyUserSerializer , HandleInvitationSerializer , UsersCategorySerializer , CityCategorySerializer, PostsCategorySerializer , UpdateRatingSerializer , ChatSerializer , MessageSerializer
+from .models import User , Posts  , UserProfile , WorkerInvitation , UsersCategory , CityCategory , PostsCategory , Chat , Message
+>>>>>>> 2aac61f (a)
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework.permissions import IsAuthenticated ,AllowAny
 from django.core.exceptions import PermissionDenied
@@ -24,6 +29,43 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django_filters import rest_framework as filters
 from datetime import datetime
 from django.utils.timezone import now
+<<<<<<< HEAD
+=======
+
+class ChatViewSet(viewsets.ModelViewSet):
+    queryset = Chat.objects.all()
+    serializer_class = ChatSerializer
+    def post(self, request):
+        """
+        Create a new Chat instance with the given participants.
+        """
+        participant_ids = request.data.get("participants", [])
+        if not participant_ids:
+            return Response({"error": "Participants are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            participants = User.objects.filter(id__in=participant_ids)
+            if not participants.exists():
+                return Response({"error": "One or more participants do not exist."}, status=status.HTTP_400_BAD_REQUEST)
+
+            chat = Chat.objects.create()
+            chat.participants.set(participants)
+            chat.save()
+            return Response(
+                {
+                    "id": chat.id,
+                    "participants": [user.username for user in chat.participants.all()],
+                    "created_at": chat.created_at,
+                },
+                status=status.HTTP_201_CREATED,
+            )
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class MessagesViewSet(viewsets.ModelViewSet):
+    queryset = Message.objects.all()
+    serializer_class = MessageSerializer
+>>>>>>> 2aac61f (a)
 
 class RegisterViewSet(viewsets.ViewSet):
     serializer_class = RegisterSerializer
@@ -99,8 +141,13 @@ class PostsCategoryViewSet(viewsets.ModelViewSet):
     serializer_class = PostsCategorySerializer
 
 
+<<<<<<< HEAD
 class UserTypeViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [AllowAny]
+=======
+class UserTypeViewSet(viewsets.ModelViewSet):
+
+>>>>>>> 2aac61f (a)
     queryset = UserProfile.objects.filter()
     serializer_class = UserTypeSerializer
 
@@ -113,6 +160,35 @@ class UserTypeViewSet(viewsets.ReadOnlyModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
+<<<<<<< HEAD
+=======
+    def get_permissions(self):
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            return [permissions.IsAuthenticated()]
+        return [permissions.AllowAny()]
+
+    @action(detail=False, methods=['post'], url_path='update-rating')
+    def update_rating(self, request):
+        # Use the serializer to validate incoming data
+        serializer = UpdateRatingSerializer(data=request.data)
+
+        if serializer.is_valid():
+            user_id = serializer.validated_data['user_id']
+            new_rating = serializer.validated_data['rating']
+
+            try:
+                # Retrieve the UserProfile object
+                user_profile = UserProfile.objects.get(user_id=user_id)
+            except UserProfile.DoesNotExist:
+                return Response({'error': 'User profile not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+            # Update the rating
+            user_profile.update_rating(new_rating)
+
+            return Response({'message': 'Rating updated successfully', 'rating': user_profile.rating}, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+>>>>>>> 2aac61f (a)
 
 class CompanyUsersView(APIView):
     permission_classes = [IsAuthenticated]
@@ -165,6 +241,35 @@ class JobPostViewSet(viewsets.ModelViewSet):
         return [permissions.AllowAny()]
 
 
+<<<<<<< HEAD
+=======
+    @action(detail=True, methods=['post'], url_path='update-status')
+    def update_status(self, request, pk=None):
+        """
+        Custom action to update the status of a job post.
+        """
+        try:
+            job_post = self.get_object()  # Get the specific job post by ID
+            new_status = request.data.get('status')  # Get the new status from the request
+
+            if not new_status:
+                return Response({'error': 'Status is required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Authorization: Only the homeowner can update the status
+            if request.user.profile.user_type != 'homeowner':
+                return Response({'error': 'You are not authorized to update the status of this job.'}, status=status.HTTP_403_FORBIDDEN)
+
+            # Update the status and save
+            job_post.status = new_status
+            job_post.save()
+
+            return Response({'message': 'Job status updated successfully', 'status': job_post.status}, status=status.HTTP_200_OK)
+
+        except Posts.DoesNotExist:
+            return Response({'error': 'Job post not found.'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+>>>>>>> 2aac61f (a)
 
 
     def update(self, request, *args, **kwargs):

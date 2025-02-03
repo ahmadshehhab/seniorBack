@@ -1,16 +1,17 @@
 from pathlib import Path
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-
+import os
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 SECRET_KEY = 'django-insecure--ju!qptoc83jeh26#2xi%@!8%=1-efcx6mic!_@p#sj3!!y#$8'
 from datetime import timedelta
-DEBUG = True
+DEBUG = False
 SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
-    'BLACKLIST_AFTER_ROTATION': True, 
+    'BLACKLIST_AFTER_ROTATION': True,
     "ACCESS_TOKEN_LIFETIME": timedelta(days=10),
 }
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -22,6 +23,7 @@ INSTALLED_APPS = [
     'prof',
     'rest_framework',
     'rest_framework_simplejwt',
+<<<<<<< HEAD
     'corsheaders'
 ] 
 
@@ -32,6 +34,12 @@ REST_FRAMEWORK = {
     ),
 }
 
+=======
+    'rest_framework_simplejwt.token_blacklist',
+    'corsheaders',
+    'channels'
+]
+>>>>>>> 2aac61f (a)
 APPEND_SLASH=False
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -45,6 +53,8 @@ MIDDLEWARE = [
 ]
 
 
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
 
 
 
@@ -58,9 +68,16 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'ahmadshehab11177@gmail.com'  # Your email address
 EMAIL_HOST_PASSWORD = 'ukct mpvp cloj cubq'
 
-
+ASGI_APPLICATION = 'project.asgi.application'
 ROOT_URLCONF = 'project.urls'
 CORS_ALLOW_ALL_ORIGINS = True
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    },
+}
+
 
 TEMPLATES = [
     {
@@ -90,6 +107,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 }
 
 
@@ -99,11 +117,10 @@ REST_FRAMEWORK = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'senior',
-        'USER': 'root',
-        'PASSWORD': 'localhost:3000',
-        'HOST':'localhost',
-        'PORT':'3306',
+        'NAME': 'ahmadshehab19951$senior',
+        'USER': 'ahmadshehab19951',
+        'PASSWORD': 'Ahmad1412',
+        'HOST':'ahmadshehab19951995.mysql.pythonanywhere-services.com'
     }
 }
 

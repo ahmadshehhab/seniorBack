@@ -11,6 +11,11 @@ router.register(r'jobposts', views.JobPostViewSet, basename='jobpost')
 router.register('posts-category', views.PostsCategoryViewSet, basename='postscategory')
 router.register('users-category', views.UsersCategoryViewSet, basename='userscategory')
 router.register('city-category', views.CityCategoryViewSet, basename='cityCategory')
+<<<<<<< HEAD
+=======
+router.register('chats', views.ChatViewSet, basename='chat')
+router.register('messages', views.MessagesViewSet, basename='message')
+>>>>>>> 2aac61f (a)
 """ router.register('accept-job', views.jobAcceptanceView, basename='acceptJob') """
 
 # Note: LoginView is not a ViewSet; it should not be registered with a router.

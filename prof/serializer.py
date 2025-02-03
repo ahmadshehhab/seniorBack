@@ -1,5 +1,9 @@
 from rest_framework import serializers
+<<<<<<< HEAD
 from .models import UserProfile ,Posts , UsersCategory , CityCategory , PostsCategory
+=======
+from .models import UserProfile ,Posts , UsersCategory , CityCategory , PostsCategory ,  Message , Chat
+>>>>>>> 2aac61f (a)
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -10,7 +14,29 @@ from django.conf import settings
 from random import randint
 import datetime
 
+class MessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Message
+        fields = '__all__'
 
+
+class ChatSerializer(serializers.ModelSerializer):
+    messages = MessageSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Chat
+        fields = ["participants","created_at","messages","id"]
+
+
+
+class UpdateRatingSerializer(serializers.Serializer):
+    user_id = serializers.IntegerField()
+    rating = serializers.DecimalField(max_digits=3, decimal_places=2)
+
+    def validate_rating(self, value):
+        if value < 0 or value > 5:
+            raise serializers.ValidationError("Rating must be between 0 and 5.")
+        return value
 
 class RegisterSerializer(serializers.ModelSerializer):
     phone = serializers.CharField(max_length=15)
@@ -81,6 +107,7 @@ class UsersCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = UsersCategory
         fields = ["id", "type"]
+<<<<<<< HEAD
 
 class CityCategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -99,12 +126,40 @@ class UserTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = ['username', 'user_type',"phone" , "address" ,"email"]
+=======
+>>>>>>> 2aac61f (a)
 
-class UserProfileSerializer(serializers.ModelSerializer):
+class CityCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CityCategory
+        fields = ["id", "city"]
+
+class PostsCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PostsCategory
+        fields = ["id", "category"]
+
+
+class UserTypeSerializer(serializers.ModelSerializer):
+    email = serializers.CharField(source='user.email')
+    username = serializers.CharField(source='user.username')
     class Meta:
         model = UserProfile
-        fields = ['id', 'user', 'workAs', 'phone', 'latitude', 'longitude', 'address', 'user_type']
-        depth = 1  # Optional: To include nested user details in the response
+        fields = '__all__'
+        depth = 1
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    rating = serializers.DecimalField(max_digits=3, decimal_places=2, read_only=True)
+    total_ratings = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = UserProfile
+        fields = [
+            'id', 'user', 'workAs', 'phone', 'latitude', 'longitude',
+            'address', 'user_type', "interests", "rating", "total_ratings"
+        ]
+        depth = 1
 
 class CompanyUserSerializer(serializers.ModelSerializer):
     users = serializers.SerializerMethodField()
